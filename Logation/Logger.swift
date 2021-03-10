@@ -9,22 +9,13 @@ import Foundation
 import CoreLocation
 
 protocol ILocationLogger {
-    func log(lat: Double, long: Double, accuracy: LocationAccuracy?, time: Int64, ext: String, callback:  ((Any) -> Void)?)
-}
-
-
-public enum LocationAccuracy {
-    case low
-    case medium
-    case high
+    func log(lat: Double, long: Double, accuracy: Double, time: Int64, ext: String, callback:  ((Any?) -> Void)?)
 }
 
 public class Logger {
-    public var accuracyLevel: LocationAccuracy
     private var url: String
-    public init(url: String, accuracyLevel: LocationAccuracy  = CLLocationManager.locationServicesEnabled() ? .high : .low) {
+    public init(url: String) {
         self.url = url
-        self.accuracyLevel = accuracyLevel
     }
 }
 
@@ -33,16 +24,16 @@ struct LogEntry {
     var long: Double
     var time: Int64
     var extras: String
+    var accuracy: CLLocationAccuracy
 }
 
 extension LogEntry {
-    func convertToPayload(level: LocationAccuracy) -> [String: Any] {
+    var payload : [String: Any] {
         var payload = [String: Any]()
-        switch level {
-        case .low:
-            payload["lat"] = 0
-            payload["long"] = 0
-        default:
+        if(accuracy == 0) {
+            payload["lat"] = Double(0.0)
+            payload["long"] = Double(0.0)
+        } else {
             payload["lat"] = self.lat
             payload["long"] = self.long
         }
@@ -54,15 +45,26 @@ extension LogEntry {
 
 
 extension Logger: ILocationLogger {
-    public func log(lat: Double, long: Double, accuracy: LocationAccuracy? = nil,time: Int64 = Int64(Date().timeIntervalSince1970),  ext: String = "", callback:  ((Any) -> Void)? = nil) {
-        let logEntry = LogEntry(lat: lat, long: long, time: time, extras: ext)
-        let payload = logEntry.convertToPayload(level: accuracy ?? self.accuracyLevel)
+    public func log(lat: Double, long: Double, accuracy: CLLocationAccuracy,time: Int64 = Int64(Date().timeIntervalSince1970),  ext: String = "", callback:  ((Any?) -> Void)? = nil) {
+        let logEntry = LogEntry(lat: lat, long: long, time: time, extras: ext, accuracy: accuracy)
         DispatchQueue.global().async {
-            self.submit(payload: payload, callback: callback)
+            self.submit(payload: logEntry.payload, callback: callback)
         }
     }
 
-    private func submit(payload: [String: Any], callback:  ((Any) -> Void)?){
+    public func logLocation(callback:((Any?) -> Void)? = nil) {
+        if !CLLocationManager.locationServicesEnabled() {
+            self.log(lat: 0, long: 0, accuracy: 0, callback: callback)
+        } else if let lastUpdatedLocation = LocationUpdater.shared.lastLocation, lastUpdatedLocation.timestamp.timeIntervalSinceNow < 2 {
+            self.log(lat: lastUpdatedLocation.coordinate.latitude, long: lastUpdatedLocation.coordinate.longitude, accuracy: lastUpdatedLocation.horizontalAccuracy, callback: callback)
+        } else {
+            LocationUpdater.shared.startUpdating { [weak self] (location) in
+                self?.log(lat: location.coordinate.latitude, long: location.coordinate.longitude, accuracy: location.horizontalAccuracy, callback: callback)
+            }
+        }
+    }
+
+    private func submit(payload: [String: Any], callback:  ((Any?) -> Void)?){
         if let url = URL(string: self.url) {
             var urlRequest = URLRequest(url: url)
             urlRequest.httpMethod = "POST"
@@ -77,6 +79,7 @@ extension Logger: ILocationLogger {
             task.resume()
         } else {
             print("INVALID URL")
+            callback?(nil)
         }
     }
 }
