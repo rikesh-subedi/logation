@@ -11,6 +11,7 @@
 		AF57EC3B25F8600E0072176B /* LogationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF57EC3A25F8600E0072176B /* LogationTests.swift */; };
 		AF57EC3D25F8600E0072176B /* Logation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF4F93C025F5E375006AFD22 /* Logation.framework */; };
 		AF57EC4625F873160072176B /* LocationUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF57EC4525F873160072176B /* LocationUpdater.swift */; };
+		AF57EC4E25F9B87E0072176B /* LoggerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF57EC4D25F9B87E0072176B /* LoggerManager.swift */; };
 		AFE6328725F717D900CBF884 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFE6328625F717D900CBF884 /* Logger.swift */; };
 /* End PBXBuildFile section */
 
@@ -32,6 +33,7 @@
 		AF57EC3A25F8600E0072176B /* LogationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogationTests.swift; sourceTree = "<group>"; };
 		AF57EC3C25F8600E0072176B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AF57EC4525F873160072176B /* LocationUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationUpdater.swift; sourceTree = "<group>"; };
+		AF57EC4D25F9B87E0072176B /* LoggerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggerManager.swift; sourceTree = "<group>"; };
 		AFE6328625F717D900CBF884 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -79,6 +81,7 @@
 				AF4F93C425F5E375006AFD22 /* Info.plist */,
 				AFE6328625F717D900CBF884 /* Logger.swift */,
 				AF57EC4525F873160072176B /* LocationUpdater.swift */,
+				AF57EC4D25F9B87E0072176B /* LoggerManager.swift */,
 			);
 			path = Logation;
 			sourceTree = "<group>";
@@ -201,6 +204,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AF57EC4E25F9B87E0072176B /* LoggerManager.swift in Sources */,
 				AF57EC4625F873160072176B /* LocationUpdater.swift in Sources */,
 				AFE6328725F717D900CBF884 /* Logger.swift in Sources */,
 			);
